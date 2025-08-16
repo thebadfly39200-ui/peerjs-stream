@@ -1,15 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Viewer</title>
+  <meta charset="UTF-8">
+  <title>Viewer - WebClubTV</title>
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #222;
+    }
+    video {
+      margin-top: 30px;
+      width: 80%;
+      max-width: 900px;
+      border: 2px solid #444;
+      background: black;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h1>👀 Viewer</h1>
+  <h1>👀 WebClubTV - Viewer</h1>
+  <p class="status" id="status">⏳ Connexion au streamer <strong>webclubtv.fr</strong>...</p>
   <video id="video" autoplay playsinline></video>
 
-  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
     const video = document.getElementById("video");
+    const statusText = document.getElementById("status");
 
     const peer = new Peer(null, {
       host: "peerjs.com",
@@ -19,37 +45,41 @@
 
     peer.on("open", id => {
       console.log("Viewer ID :", id);
-      console.log("📞 Appel vers le streamer...");
+      statusText.textContent = "📞 Appel vers le streamer...";
 
-      // Flux vide requis pour certains navigateurs
       navigator.mediaDevices.getUserMedia({ video: false, audio: false })
         .then(dummyStream => {
           const mediaConnection = peer.call("webclubtv.fr", dummyStream);
 
           mediaConnection.on("stream", stream => {
             console.log("📺 Flux reçu !");
+            statusText.textContent = "✅ Connecté à webclubtv.fr";
             video.srcObject = stream;
           });
 
           mediaConnection.on("error", err => {
             console.error("Erreur d’appel :", err);
+            statusText.textContent = "❌ Erreur d’appel : " + err;
           });
 
           mediaConnection.on("close", () => {
             console.log("📴 Connexion fermée");
+            statusText.textContent = "🔒 Le streamer a terminé la diffusion.";
           });
         })
         .catch(err => {
           console.error("Erreur d’accès au micro/caméra :", err);
+          statusText.textContent = "❌ Erreur d’accès au micro/caméra";
         });
     });
 
     peer.on("error", err => {
       console.error("Erreur PeerJS :", err);
+      statusText.textContent = "❌ Erreur PeerJS : " + err;
     });
   </script>
 </body>
 </html>
 
 &&&&
-22
+22 mise a jour
