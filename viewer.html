@@ -47,9 +47,9 @@
       console.log("Viewer ID :", id);
       statusText.textContent = "📞 Appel vers le streamer...";
 
-      navigator.mediaDevices.getUserMedia({ video: false, audio: false })
-        .then(dummyStream => {
-          const mediaConnection = peer.call("webclubtv.fr", dummyStream);
+      const dummyStream = new MediaStream();
+const mediaConnection = peer.call("webclubtv.fr", dummyStream);
+
 
           mediaConnection.on("stream", stream => {
             console.log("📺 Flux reçu !");
