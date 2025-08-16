@@ -5,7 +5,7 @@
 </head>
 <body>
   <h1>👀 Viewer</h1>
-  <video id="video" autoplay></video>
+  <video id="video" autoplay playsinline></video>
 
   <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
@@ -19,13 +19,15 @@
 
     peer.on("open", id => {
       console.log("Viewer ID :", id);
+      console.log("📞 Appel vers le streamer...");
 
+      // Flux vide requis pour certains navigateurs
       navigator.mediaDevices.getUserMedia({ video: false, audio: false })
         .then(dummyStream => {
           const mediaConnection = peer.call("webclubtv.fr", dummyStream);
 
           mediaConnection.on("stream", stream => {
-            console.log("📺 Stream reçu !");
+            console.log("📺 Flux reçu !");
             video.srcObject = stream;
           });
 
@@ -36,9 +38,18 @@
           mediaConnection.on("close", () => {
             console.log("📴 Connexion fermée");
           });
+        })
+        .catch(err => {
+          console.error("Erreur d’accès au micro/caméra :", err);
         });
+    });
+
+    peer.on("error", err => {
+      console.error("Erreur PeerJS :", err);
     });
   </script>
 </body>
 </html>
+
 &&&&
+22
