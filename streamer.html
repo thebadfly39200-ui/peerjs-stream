@@ -20,7 +20,13 @@
           port: 443,
           secure: true
         });
-
+peer.on("call", call => {
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(stream => {
+      call.answer(stream); // ✅ Envoie le flux au viewer
+      document.getElementById("video").srcObject = stream; // Affiche localement
+    });
+});
         peer.on("open", id => {
           console.log("Streamer ID :", id);
         });
