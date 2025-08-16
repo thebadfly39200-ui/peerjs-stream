@@ -7,43 +7,29 @@
   <h1>🎥 Streamer</h1>
   <video id="video" autoplay muted></video>
 
-  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-  <script>
-    const video = document.getElementById("video");
+ <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+<script>
+  const peer = new Peer(); // ID automatique
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(stream => {
-        video.srcObject = stream;
+  peer.on("open", (id) => {
+    console.log("🟢 Streamer prêt avec ID :", id);
+    document.getElementById("streamer-id").textContent = id;
+  });
 
-        const peer = new Peer("webclubtv.fr", {
-          host: "0.peerjs.com",
-          port: 443,
-          secure: true
-        });
-peer.on("call", call => {
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-      call.answer(stream); // ✅ Envoie le flux au viewer
-      document.getElementById("video").srcObject = stream; // Affiche localement
-    });
-});
-        peer.on("open", id => {
-          console.log("Streamer ID :", id);
-        });
-
-        peer.on("call", call => {
-          console.log("📞 Appel reçu !");
-          call.answer(stream);
-        });
-
-        peer.on("error", err => {
-          console.error("Erreur PeerJS :", err);
-        });
-      })
-      .catch(err => {
-        console.error("Erreur d'accès à la webcam :", err);
+    .then((stream) => {
+      console.log("📹 Flux capturé");
+      peer.on("call", (call) => {
+        console.log("📞 Appel reçu du viewer");
+        call.answer(stream);
       });
-  </script>
+    })
+    .catch((err) => {
+      console.error("🚨 Erreur de capture :", err);
+    });
+</script>
+
+<p>ID du streamer : <span id="streamer-id">...</span></p>
 </body>
 </html>
-mise a jour 29
+mise a jour 240
