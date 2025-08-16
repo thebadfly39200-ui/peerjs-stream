@@ -1,35 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Streamer</title>
+  <meta charset="UTF-8">
+  <title>Streamer - WebClubTV</title>
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video {
+      width: 80%;
+      max-width: 600px;
+      margin-top: 20px;
+      border: 2px solid #333;
+    }
+    #streamer-id {
+      font-weight: bold;
+      color: #007bff;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>🎥 Streamer</h1>
-  <video id="video" autoplay muted></video>
 
- <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-<script>
-  const peer = new Peer(); // ID automatique
+  <h1>🎥 Streamer - WebClubTV</h1>
+  <p>ID du streamer : <span id="streamer-id">...</span></p>
+  <button onclick="copyStreamerId()">📋 Copier l'ID</button>
+  <video id="video" autoplay muted playsinline></video>
 
-  peer.on("open", (id) => {
-    console.log("🟢 Streamer prêt avec ID :", id);
-    document.getElementById("streamer-id").textContent = id;
-  });
+  <script>
+    const peer = new Peer(); // ID automatique
 
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then((stream) => {
-      console.log("📹 Flux capturé");
-      peer.on("call", (call) => {
-        console.log("📞 Appel reçu du viewer");
-        call.answer(stream);
-      });
-    })
-    .catch((err) => {
-      console.error("🚨 Erreur de capture :", err);
+    peer.on("open", (id) => {
+      console.log("🟢 Streamer prêt avec ID :", id);
+      document.getElementById("streamer-id").textContent = id;
     });
-</script>
 
-<p>ID du streamer : <span id="streamer-id">...</span></p>
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        console.log("📹 Flux capturé");
+        const video = document.getElementById("video");
+        video.srcObject = stream;
+        video.play();
+
+        peer.on("call", (call) => {
+          console.log("📞 Appel reçu du viewer");
+          call.answer(stream);
+        });
+      })
+      .catch((err) => {
+        console.error("🚨 Erreur de capture :", err);
+        alert("Impossible d'accéder à la caméra ou au micro.");
+      });
+
+    function copyStreamerId() {
+      const id = document.getElementById("streamer-id").textContent;
+      navigator.clipboard.writeText(id)
+        .then(() => alert("✅ ID copié dans le presse-papiers"))
+        .catch(() => alert("❌ Impossible de copier l'ID"));
+    }
+  </script>
+
 </body>
 </html>
-mise a jour 240
+
+mise a jour 500
