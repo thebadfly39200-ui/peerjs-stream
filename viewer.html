@@ -3,83 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Viewer - WebClubTV</title>
-  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 {
-      color: #222;
-    }
-    video {
-      margin-top: 30px;
-      width: 80%;
-      max-width: 900px;
-      border: 2px solid #444;
-      background: black;
-    }
-    .status {
-      margin-top: 20px;
-      font-size: 16px;
-      color: #555;
-    }
-  </style>
-</head>
-<body>
-  <h1>👀 WebClubTV - Viewer</h1>
-  <p class="status" id="status">⏳ Connexion au streamer <strong>webclubtv.fr</strong>...</p>
-  <video id="video" autoplay playsinline></video>
+<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+<script>
+  const peer = new Peer(); // ID automatique
 
-  <script>
-    const video = document.getElementById("video");
-    const statusText = document.getElementById("status");
+  peer.on("open", (id) => {
+    console.log("🟢 Viewer prêt avec ID :", id);
+  });
 
-    const peer = new Peer(null, {
-      host: "0.peerjs.com",
-      port: 443,
-      secure: true
+  function connectToStreamer(streamerId) {
+    const call = peer.call(streamerId, null); // pas de flux à envoyer
+
+    call.on("stream", (remoteStream) => {
+      console.log("📺 Flux reçu du streamer");
+      const video = document.getElementById("video");
+      video.srcObject = remoteStream;
+      video.play();
     });
 
-    peer.on("open", id => {
-      console.log("Viewer ID :", id);
-      statusText.textContent = "📞 Appel vers le streamer...";
-
-      const dummyStream = new MediaStream();
-const mediaConnection = peer.call("webclubtv.fr", dummyStream);
-
-
-          mediaConnection.on("stream", stream => {
-            console.log("📺 Flux reçu !");
-            statusText.textContent = "✅ Connecté à webclubtv.fr";
-            video.srcObject = stream;
-          });
-
-          mediaConnection.on("error", err => {
-            console.error("Erreur d’appel :", err);
-            statusText.textContent = "❌ Erreur d’appel : " + err;
-          });
-
-          mediaConnection.on("close", () => {
-            console.log("📴 Connexion fermée");
-            statusText.textContent = "🔒 Le streamer a terminé la diffusion.";
-          });
-        })
-        .catch(err => {
-          console.error("Erreur d’accès au micro/caméra :", err);
-          statusText.textContent = "❌ Erreur d’accès au micro/caméra";
-        });
+    call.on("error", (err) => {
+      console.error("🚨 Erreur d'appel :", err);
     });
+  }
+</script>
 
-    peer.on("error", err => {
-      console.error("Erreur PeerJS :", err);
-      statusText.textContent = "❌ Erreur PeerJS : " + err;
-    });
-  </script>
-</body>
-</html>
+<input type="text" id="streamerIdInput" placeholder="ID du streamer">
+<button onclick="connectToStreamer(document.getElementById('streamerIdInput').value)">Se connecter</button>
+<video id="video" autoplay></video>
 
 &&&&
-28 mise a jour
+404 mise a jour
