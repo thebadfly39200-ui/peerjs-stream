@@ -10,22 +10,22 @@
       text-align: center;
       padding: 20px;
     }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
     video {
       width: 80%;
       max-width: 600px;
       margin-top: 20px;
       border: 2px solid #333;
     }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px;
-    }
   </style>
 </head>
 <body>
 
-  <h1>🎥 Viewer - WebClubTV</h1>
+  <h1>👀 Viewer - WebClubTV</h1>
   <p>Entrez l'ID du streamer pour vous connecter :</p>
   <input type="text" id="streamerIdInput" placeholder="ID du streamer">
   <button onclick="connectToStreamer()">Se connecter</button>
@@ -39,6 +39,11 @@
       console.log("🟢 Viewer prêt avec ID :", id);
     });
 
+    peer.on("error", (err) => {
+      console.error("🚨 Erreur PeerJS :", err);
+      alert("Erreur PeerJS : " + err.type);
+    });
+
     function connectToStreamer() {
       const streamerId = document.getElementById("streamerIdInput").value.trim();
       if (!streamerId) {
@@ -47,6 +52,11 @@
       }
 
       const call = peer.call(streamerId, null); // pas de flux à envoyer
+
+      if (!call) {
+        alert("❌ Impossible de contacter le streamer. Vérifie l'ID.");
+        return;
+      }
 
       call.on("stream", (remoteStream) => {
         console.log("📺 Flux reçu du streamer");
@@ -65,5 +75,6 @@
 </body>
 </html>
 
-&&&&
+
+
 500 mise a jour
