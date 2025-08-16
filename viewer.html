@@ -3,33 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <title>Viewer - WebClubTV</title>
-<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-<script>
-  const peer = new Peer(); // ID automatique
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video {
+      width: 80%;
+      max-width: 600px;
+      margin-top: 20px;
+      border: 2px solid #333;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
 
-  peer.on("open", (id) => {
-    console.log("🟢 Viewer prêt avec ID :", id);
-  });
+  <h1>🎥 Viewer - WebClubTV</h1>
+  <p>Entrez l'ID du streamer pour vous connecter :</p>
+  <input type="text" id="streamerIdInput" placeholder="ID du streamer">
+  <button onclick="connectToStreamer()">Se connecter</button>
 
-  function connectToStreamer(streamerId) {
-    const call = peer.call(streamerId, null); // pas de flux à envoyer
+  <video id="video" autoplay playsinline></video>
 
-    call.on("stream", (remoteStream) => {
-      console.log("📺 Flux reçu du streamer");
-      const video = document.getElementById("video");
-      video.srcObject = remoteStream;
-      video.play();
+  <script>
+    const peer = new Peer(); // ID automatique
+
+    peer.on("open", (id) => {
+      console.log("🟢 Viewer prêt avec ID :", id);
     });
 
-    call.on("error", (err) => {
-      console.error("🚨 Erreur d'appel :", err);
-    });
-  }
-</script>
+    function connectToStreamer() {
+      const streamerId = document.getElementById("streamerIdInput").value.trim();
+      if (!streamerId) {
+        alert("Veuillez entrer un ID de streamer.");
+        return;
+      }
 
-<input type="text" id="streamerIdInput" placeholder="ID du streamer">
-<button onclick="connectToStreamer(document.getElementById('streamerIdInput').value)">Se connecter</button>
-<video id="video" autoplay></video>
+      const call = peer.call(streamerId, null); // pas de flux à envoyer
+
+      call.on("stream", (remoteStream) => {
+        console.log("📺 Flux reçu du streamer");
+        const video = document.getElementById("video");
+        video.srcObject = remoteStream;
+        video.play();
+      });
+
+      call.on("error", (err) => {
+        console.error("🚨 Erreur d'appel :", err);
+        alert("Erreur lors de la connexion au streamer.");
+      });
+    }
+  </script>
+
+</body>
+</html>
 
 &&&&
-404 mise a jour
+500 mise a jour
