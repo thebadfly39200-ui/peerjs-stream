@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Viewer</title>
+</head>
+<body>
+  <h1>👀 Viewer</h1>
+  <video id="video" autoplay></video>
+
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <script>
+    const video = document.getElementById("video");
+
+    const peer = new Peer(null, {
+      host: "peerjs.com",
+      port: 443,
+      secure: true
+    });
+
+    peer.on("open", id => {
+      console.log("Viewer ID :", id);
+
+      navigator.mediaDevices.getUserMedia({ video: false, audio: false })
+        .then(dummyStream => {
+          const mediaConnection = peer.call("webclubtv.fr", dummyStream);
+
+          mediaConnection.on("stream", stream => {
+            console.log("📺 Stream reçu !");
+            video.srcObject = stream;
+          });
+
+          mediaConnection.on("error", err => {
+            console.error("Erreur d’appel :", err);
+          });
+
+          mediaConnection.on("close", () => {
+            console.log("📴 Connexion fermée");
+          });
+        });
+    });
+  </script>
+</body>
+</html>
